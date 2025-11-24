@@ -1,11 +1,15 @@
 <template>
-  <div class="sale-container">
+  <div id="sale">
+    <!-- 导航栏 -->
+    <nav-bar class="nav-bar">
+      <div slot="center">特价</div>
+    </nav-bar>
+    
     <!-- 搜索框 -->
-    <div class="search-bar">
-      <input type="text" placeholder="搜索特价商品" class="search-input">
-      <button class="search-btn">搜索</button>
+    <div class="search-container">
+      <input type="text" class="search-input" placeholder="搜索特价商品">
     </div>
-
+    
     <!-- 天天低价商品框 -->
     <div class="daily-deals">
       <div class="daily-deals-header">
@@ -13,52 +17,51 @@
         <button class="view-all-btn">查看全部</button>
       </div>
       <div class="daily-deals-list">
-        <div class="product-item" v-for="product in dailyProducts" :key="product.id">
-          <img :src="product.image" :alt="product.name" class="product-image">
-          <div class="product-info">
-            <div class="product-name">{{ product.name }}</div>
-            <div class="product-price">¥{{ product.price }}</div>
-            <div class="product-original-price">¥{{ product.originalPrice }}</div>
+        <div class="deal-item" v-for="(item, index) in dailyDeals" :key="index">
+          <img :src="item.image" alt="" class="deal-image">
+          <div class="deal-info">
+            <h3 class="deal-title">{{ item.title }}</h3>
+            <p class="deal-price">¥{{ item.price }}</p>
           </div>
         </div>
       </div>
     </div>
-
+    
     <!-- 分类表 -->
     <div class="category-tabs">
-      <div class="category-tab" v-for="category in categories" :key="category.id" :class="{ active: currentCategory === category.id }" @click="switchCategory(category.id)">
-        {{ category.name }}
+      <div class="tab-item" v-for="(category, index) in categories" :key="index" :class="{ active: currentCategory === index }" @click="switchCategory(index)">
+        {{ category }}
       </div>
     </div>
-
+    
     <!-- 商品列表 -->
-    <div class="product-list">
-      <div class="product-item" v-for="product in filteredProducts" :key="product.id">
-        <img :src="product.image" :alt="product.name" class="product-image">
-        <div class="product-info">
-          <div class="product-name">{{ product.name }}</div>
-          <div class="product-price">¥{{ product.price }}</div>
-          <div class="product-original-price">¥{{ product.originalPrice }}</div>
+    <scroll class="content" ref="scroll" :probe-type="3">
+      <div class="goods-list">
+        <div class="goods-item" v-for="(item, index) in currentGoods" :key="index" @click="goToDetail(item.id)">
+          <img :src="item.image" alt="" class="goods-image">
+          <div class="goods-info">
+            <h3 class="goods-title">{{ item.title }}</h3>
+            <p class="goods-price">¥{{ item.price }}</p>
+            <p class="goods-origin-price">¥{{ item.originPrice }}</p>
+          </div>
         </div>
       </div>
-    </div>
-
+    </scroll>
+    
     <!-- 我的爆料板块 -->
-    <div class="my-tips">
-      <div class="my-tips-header">
+    <div class="爆料-section">
+      <div class="爆料-header">
         <h2>我的爆料</h2>
-        <button class="add-tip-btn">+ 发布爆料</button>
+        <button class="submit-btn">发布爆料</button>
       </div>
-      <div class="my-tips-list">
-        <div class="tip-item" v-for="tip in myTips" :key="tip.id">
-          <div class="tip-product">
-            <img :src="tip.product.image" :alt="tip.product.name" class="tip-product-image">
-            <div class="tip-product-info">
-              <div class="tip-product-name">{{ tip.product.name }}</div>
-              <div class="tip-product-price">¥{{ tip.product.price }}</div>
-            </div>
+      <div class="爆料-list">
+        <div class="爆料-item" v-for="(item, index) in 爆料s" :key="index">
+          <img :src="item.image" alt="" class="爆料-image">
+          <div class="爆料-info">
+            <h3 class="爆料-title">{{ item.title }}</h3>
+            <p class="爆料-price">¥{{ item.price }}</p>
+            <p class="爆料-user">by {{ item.user }}</p>
           </div>
-          <div class="tip-status">{{ tip.status }}</div>
         </div>
       </div>
     </div>
@@ -66,84 +69,112 @@
 </template>
 
 <script>
+import NavBar from 'common/navbar/NavBar'
+import Scroll from 'common/scroll/Scroll'
+
 export default {
-  name: 'Sale',
+  name: "Sale",
+  components: {
+    NavBar,
+    Scroll
+  },
   data() {
     return {
-      currentCategory: 1,
-      categories: [
-        { id: 1, name: '精选' },
-        { id: 2, name: '24h最热' },
-        { id: 3, name: '3h最热' },
-        { id: 4, name: '好价活动' },
-        { id: 5, name: '食品' },
-        { id: 6, name: '居家' }
+      // 天天低价商品数据
+      dailyDeals: [
+        { id: 1, title: '商品1', price: 9.9, image: 'https://via.placeholder.com/100' },
+        { id: 2, title: '商品2', price: 19.9, image: 'https://via.placeholder.com/100' },
+        { id: 3, title: '商品3', price: 29.9, image: 'https://via.placeholder.com/100' },
+        { id: 4, title: '商品4', price: 39.9, image: 'https://via.placeholder.com/100' }
       ],
-      dailyProducts: [
-        { id: 1, name: '示例商品1', price: 9.9, originalPrice: 19.9, image: 'https://via.placeholder.com/100' },
-        { id: 2, name: '示例商品2', price: 19.9, originalPrice: 39.9, image: 'https://via.placeholder.com/100' },
-        { id: 3, name: '示例商品3', price: 29.9, originalPrice: 59.9, image: 'https://via.placeholder.com/100' },
-        { id: 4, name: '示例商品4', price: 39.9, originalPrice: 79.9, image: 'https://via.placeholder.com/100' }
-      ],
-      allProducts: [
-        { id: 1, name: '精选商品1', price: 9.9, originalPrice: 19.9, image: 'https://via.placeholder.com/100', category: 1 },
-        { id: 2, name: '精选商品2', price: 19.9, originalPrice: 39.9, image: 'https://via.placeholder.com/100', category: 1 },
-        { id: 3, name: '24h最热商品1', price: 29.9, originalPrice: 59.9, image: 'https://via.placeholder.com/100', category: 2 },
-        { id: 4, name: '24h最热商品2', price: 39.9, originalPrice: 79.9, image: 'https://via.placeholder.com/100', category: 2 },
-        { id: 5, name: '3h最热商品1', price: 49.9, originalPrice: 99.9, image: 'https://via.placeholder.com/100', category: 3 },
-        { id: 6, name: '3h最热商品2', price: 59.9, originalPrice: 119.9, image: 'https://via.placeholder.com/100', category: 3 },
-        { id: 7, name: '好价活动商品1', price: 69.9, originalPrice: 139.9, image: 'https://via.placeholder.com/100', category: 4 },
-        { id: 8, name: '好价活动商品2', price: 79.9, originalPrice: 159.9, image: 'https://via.placeholder.com/100', category: 4 },
-        { id: 9, name: '食品商品1', price: 89.9, originalPrice: 179.9, image: 'https://via.placeholder.com/100', category: 5 },
-        { id: 10, name: '食品商品2', price: 99.9, originalPrice: 199.9, image: 'https://via.placeholder.com/100', category: 5 },
-        { id: 11, name: '居家商品1', price: 109.9, originalPrice: 219.9, image: 'https://via.placeholder.com/100', category: 6 },
-        { id: 12, name: '居家商品2', price: 119.9, originalPrice: 239.9, image: 'https://via.placeholder.com/100', category: 6 }
-      ],
-      myTips: [
-        { id: 1, product: { id: 1, name: '示例商品1', price: 9.9, image: 'https://via.placeholder.com/100' }, status: '审核中' },
-        { id: 2, product: { id: 2, name: '示例商品2', price: 19.9, image: 'https://via.placeholder.com/100' }, status: '已通过' }
+      // 分类数据
+      categories: ['精选', '24h最热', '3h最热', '好价活动', '食品', '居家'],
+      currentCategory: 0,
+      // 商品数据
+      goodsData: {
+        0: [ // 精选
+          { id: 1, title: '精选商品1', price: 9.9, originPrice: 19.9, image: 'https://via.placeholder.com/150' },
+          { id: 2, title: '精选商品2', price: 19.9, originPrice: 29.9, image: 'https://via.placeholder.com/150' },
+          { id: 3, title: '精选商品3', price: 29.9, originPrice: 39.9, image: 'https://via.placeholder.com/150' }
+        ],
+        1: [ // 24h最热
+          { id: 4, title: '24h最热商品1', price: 19.9, originPrice: 29.9, image: 'https://via.placeholder.com/150' },
+          { id: 5, title: '24h最热商品2', price: 29.9, originPrice: 39.9, image: 'https://via.placeholder.com/150' },
+          { id: 6, title: '24h最热商品3', price: 39.9, originPrice: 49.9, image: 'https://via.placeholder.com/150' }
+        ],
+        2: [ // 3h最热
+          { id: 7, title: '3h最热商品1', price: 9.9, originPrice: 19.9, image: 'https://via.placeholder.com/150' },
+          { id: 8, title: '3h最热商品2', price: 19.9, originPrice: 29.9, image: 'https://via.placeholder.com/150' },
+          { id: 9, title: '3h最热商品3', price: 29.9, originPrice: 39.9, image: 'https://via.placeholder.com/150' }
+        ],
+        3: [ // 好价活动
+          { id: 10, title: '好价活动商品1', price: 19.9, originPrice: 29.9, image: 'https://via.placeholder.com/150' },
+          { id: 11, title: '好价活动商品2', price: 29.9, originPrice: 39.9, image: 'https://via.placeholder.com/150' },
+          { id: 12, title: '好价活动商品3', price: 39.9, originPrice: 49.9, image: 'https://via.placeholder.com/150' }
+        ],
+        4: [ // 食品
+          { id: 13, title: '食品商品1', price: 9.9, originPrice: 19.9, image: 'https://via.placeholder.com/150' },
+          { id: 14, title: '食品商品2', price: 19.9, originPrice: 29.9, image: 'https://via.placeholder.com/150' },
+          { id: 15, title: '食品商品3', price: 29.9, originPrice: 39.9, image: 'https://via.placeholder.com/150' }
+        ],
+        5: [ // 居家
+          { id: 16, title: '居家商品1', price: 19.9, originPrice: 29.9, image: 'https://via.placeholder.com/150' },
+          { id: 17, title: '居家商品2', price: 29.9, originPrice: 39.9, image: 'https://via.placeholder.com/150' },
+          { id: 18, title: '居家商品3', price: 39.9, originPrice: 49.9, image: 'https://via.placeholder.com/150' }
+        ]
+      },
+      // 爆料数据
+      爆料s: [
+        { id: 1, title: '爆料商品1', price: 9.9, user: '用户1', image: 'https://via.placeholder.com/100' },
+        { id: 2, title: '爆料商品2', price: 19.9, user: '用户2', image: 'https://via.placeholder.com/100' },
+        { id: 3, title: '爆料商品3', price: 29.9, user: '用户3', image: 'https://via.placeholder.com/100' }
       ]
     }
   },
   computed: {
-    filteredProducts() {
-      return this.allProducts.filter(product => product.category === this.currentCategory)
+    // 当前分类的商品
+    currentGoods() {
+      return this.goodsData[this.currentCategory]
     }
   },
   methods: {
-    switchCategory(categoryId) {
-      this.currentCategory = categoryId
+    // 切换分类
+    switchCategory(index) {
+      this.currentCategory = index
+    },
+    // 跳转到商品详情
+    goToDetail(id) {
+      this.$router.push(`/detail?id=${id}`)
     }
   }
 }
 </script>
 
 <style scoped>
-.sale-container {
-  padding-bottom: 50px;
+#sale {
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
 }
 
-.search-bar {
-  display: flex;
+.nav-bar {
+  background-color: #ff6b00;
+  color: white;
+}
+
+.search-container {
   padding: 10px;
   background-color: #f5f5f5;
 }
 
 .search-input {
-  flex: 1;
-  padding: 8px;
-  border: 1px solid #ddd;
-  border-radius: 4px 0 0 4px;
-  font-size: 14px;
-}
-
-.search-btn {
-  padding: 8px 16px;
-  background-color: #3CABFF;
-  color: white;
+  width: 100%;
+  height: 36px;
+  padding: 0 10px;
   border: none;
-  border-radius: 0 4px 4px 0;
-  cursor: pointer;
+  border-radius: 18px;
+  background-color: white;
+  font-size: 14px;
 }
 
 .daily-deals {
@@ -160,178 +191,209 @@ export default {
 }
 
 .daily-deals-header h2 {
-  margin: 0;
   font-size: 18px;
+  font-weight: bold;
   color: #333;
 }
 
 .view-all-btn {
   padding: 5px 10px;
-  background-color: #f5f5f5;
-  border: 1px solid #ddd;
-  border-radius: 4px;
-  cursor: pointer;
+  border: 1px solid #ff6b00;
+  border-radius: 15px;
+  background-color: white;
+  color: #ff6b00;
   font-size: 14px;
+  cursor: pointer;
 }
 
 .daily-deals-list {
   display: flex;
   overflow-x: auto;
+  gap: 10px;
 }
 
-.product-item {
+.deal-item {
   flex-shrink: 0;
-  width: 120px;
-  margin-right: 10px;
-  background-color: white;
-  border-radius: 4px;
-  overflow: hidden;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  width: 100px;
+  text-align: center;
 }
 
-.product-image {
-  width: 100%;
-  height: 120px;
+.deal-image {
+  width: 100px;
+  height: 100px;
   object-fit: cover;
+  border-radius: 8px;
+  margin-bottom: 5px;
 }
 
-.product-info {
-  padding: 8px;
-}
-
-.product-name {
-  font-size: 14px;
+.deal-title {
+  font-size: 12px;
   color: #333;
-  margin-bottom: 4px;
+  margin-bottom: 3px;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
 
-.product-price {
-  font-size: 16px;
-  color: #ff4444;
+.deal-price {
+  font-size: 14px;
   font-weight: bold;
+  color: #ff6b00;
 }
 
-.product-original-price {
+.category-tabs {
+  display: flex;
+  overflow-x: auto;
+  padding: 10px;
+  background-color: white;
+  margin-bottom: 10px;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.tab-item {
+  flex-shrink: 0;
+  padding: 5px 15px;
+  margin-right: 10px;
+  border-radius: 15px;
+  background-color: #f5f5f5;
+  color: #666;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.tab-item.active {
+  background-color: #ff6b00;
+  color: white;
+}
+
+.content {
+  flex: 1;
+  overflow: hidden;
+}
+
+.goods-list {
+  padding: 10px;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
+}
+
+.goods-item {
+  background-color: white;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  cursor: pointer;
+}
+
+.goods-image {
+  width: 100%;
+  height: 150px;
+  object-fit: cover;
+}
+
+.goods-info {
+  padding: 10px;
+}
+
+.goods-title {
+  font-size: 14px;
+  color: #333;
+  margin-bottom: 5px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+}
+
+.goods-price {
+  font-size: 16px;
+  font-weight: bold;
+  color: #ff6b00;
+  margin-bottom: 3px;
+}
+
+.goods-origin-price {
   font-size: 12px;
   color: #999;
   text-decoration: line-through;
 }
 
-.category-tabs {
-  display: flex;
-  padding: 10px;
-  background-color: white;
-  margin-bottom: 10px;
-  overflow-x: auto;
-}
-
-.category-tab {
-  flex-shrink: 0;
-  padding: 8px 16px;
-  margin-right: 10px;
-  background-color: #f5f5f5;
-  border-radius: 20px;
-  cursor: pointer;
-  font-size: 14px;
-  color: #666;
-}
-
-.category-tab.active {
-  background-color: #3CABFF;
-  color: white;
-}
-
-.product-list {
-  display: flex;
-  flex-wrap: wrap;
+.爆料-section {
   padding: 10px;
   background-color: white;
   margin-bottom: 10px;
 }
 
-.product-list .product-item {
-  width: calc(50% - 5px);
-  margin-right: 10px;
-  margin-bottom: 10px;
-}
-
-.product-list .product-item:nth-child(even) {
-  margin-right: 0;
-}
-
-.my-tips {
-  padding: 10px;
-  background-color: white;
-}
-
-.my-tips-header {
+.爆料-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
   margin-bottom: 10px;
 }
 
-.my-tips-header h2 {
-  margin: 0;
+.爆料-header h2 {
   font-size: 18px;
+  font-weight: bold;
   color: #333;
 }
 
-.add-tip-btn {
+.submit-btn {
   padding: 5px 10px;
-  background-color: #3CABFF;
-  color: white;
   border: none;
-  border-radius: 4px;
-  cursor: pointer;
+  border-radius: 15px;
+  background-color: #ff6b00;
+  color: white;
   font-size: 14px;
+  cursor: pointer;
 }
 
-.tip-item {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 10px;
-  background-color: #f5f5f5;
-  border-radius: 4px;
-  margin-bottom: 10px;
-}
-
-.tip-product {
-  display: flex;
-  align-items: center;
-}
-
-.tip-product-image {
-  width: 60px;
-  height: 60px;
-  object-fit: cover;
-  border-radius: 4px;
-  margin-right: 10px;
-}
-
-.tip-product-info {
+.爆料-list {
   display: flex;
   flex-direction: column;
+  gap: 10px;
 }
 
-.tip-product-name {
+.爆料-item {
+  display: flex;
+  align-items: center;
+  padding: 10px;
+  background-color: #f9f9f9;
+  border-radius: 8px;
+}
+
+.爆料-image {
+  width: 80px;
+  height: 80px;
+  object-fit: cover;
+  border-radius: 8px;
+  margin-right: 10px;
+}
+
+.爆料-info {
+  flex: 1;
+}
+
+.爆料-title {
   font-size: 14px;
   color: #333;
-  margin-bottom: 4px;
+  margin-bottom: 5px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
-.tip-product-price {
+.爆料-price {
   font-size: 16px;
-  color: #ff4444;
   font-weight: bold;
+  color: #ff6b00;
+  margin-bottom: 3px;
 }
 
-.tip-status {
-  font-size: 14px;
-  color: #666;
+.爆料-user {
+  font-size: 12px;
+  color: #999;
 }
 </style>
