@@ -21,9 +21,18 @@
       <div slot="text">我的</div>
     </tab-bar-item>
     <tab-bar-item link="/member">
-      <img slot="icon" src="~assets/img/tabbar/member.svg" alt="">
-      <img slot="active-icon" src="~assets/img/tabbar/member_active.svg" alt="">
+      <svg slot="icon" class="tabbar-icon">
+        <use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="#member"></use>
+      </svg>
+      <svg slot="active-icon" class="tabbar-icon">
+        <use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="#member-active"></use>
+      </svg>
       <div slot="text">会员中心</div>
+    </tab-bar-item>
+    <tab-bar-item link="/sale">
+      <img slot="icon" src="~assets/img/tabbar/sale.svg" alt="">
+      <img slot="active-icon" src="~assets/img/tabbar/sale_active.svg" alt="">
+      <div slot="text">特价</div>
     </tab-bar-item>
   </tab-bar>
 </template>
@@ -41,5 +50,13 @@
   </script>
 
 <style scoped>
+.tabbar-icon {
+  width: 24px;
+  height: 24px;
+  fill: #999;
+}
 
+.tabbar-icon.active {
+  fill: #3CABFF;
+}
 </style>
