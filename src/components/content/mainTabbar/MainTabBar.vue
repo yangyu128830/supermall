@@ -20,6 +20,11 @@
       <img slot="active-icon" src="~assets/img/tabbar/profile_active.svg" alt="">
       <div slot="text">我的</div>
     </tab-bar-item>
+    <tab-bar-item link="/member">
+      <img slot="icon" src="~assets/img/tabbar/profile.svg" alt="">
+      <img slot="active-icon" src="~assets/img/tabbar/profile_active.svg" alt="">
+      <div slot="text">会员中心</div>
+    </tab-bar-item>
   </tab-bar>
 </template>
 
