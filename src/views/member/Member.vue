@@ -15,6 +15,14 @@
                 <span class="level-tag">{{ memberLevel.name }}</span>
                 <span class="level-desc">{{ memberLevel.desc }}</span>
               </div>
+              <div class="level-progress">
+                <div class="progress-bar">
+                  <div class="progress-fill" :style="{ width: progressPercentage + '%' }"></div>
+                </div>
+                <div class="progress-text">
+                  {{ currentPoints }}/{{ nextLevelPoints }} 积分
+                </div>
+              </div>
             </div>
             <div class="member-points">
               <div class="points-value">{{ currentPoints }}</div>
@@ -46,28 +54,6 @@
             <div class="arrow-right"></div>
           </div>
           
-          <div class="menu-item" @click="goToCollect">
-            <div class="menu-icon">
-              <img src="~assets/img/common/collect.svg" alt="收藏" class="icon-img">
-            </div>
-            <div class="menu-content">
-              <div class="menu-title">我的收藏</div>
-              <div class="menu-subtitle">查看收藏的商品</div>
-            </div>
-            <div class="arrow-right"></div>
-          </div>
-          
-          <div class="menu-item" @click="goToMessage">
-            <div class="menu-icon">
-              <img src="~assets/img/profile/message.svg" alt="消息" class="icon-img">
-            </div>
-            <div class="menu-content">
-              <div class="menu-title">消息中心</div>
-              <div class="menu-subtitle">查看系统消息</div>
-            </div>
-            <div class="arrow-right"></div>
-          </div>
-          
           <div class="menu-item" @click="goToAddress">
             <div class="menu-icon">
               <img src="~assets/img/profile/phone.svg" alt="地址" class="icon-img">
@@ -79,13 +65,13 @@
             <div class="arrow-right"></div>
           </div>
           
-          <div class="menu-item" @click="goToSetting">
+          <div class="menu-item" @click="goToPoints">
             <div class="menu-icon">
-              <img src="~assets/img/profile/cart.svg" alt="设置" class="icon-img">
+              <img src="~assets/img/profile/pointer.svg" alt="积分" class="icon-img">
             </div>
             <div class="menu-content">
-              <div class="menu-title">设置</div>
-              <div class="menu-subtitle">账号设置</div>
+              <div class="menu-title">积分商城</div>
+              <div class="menu-subtitle">积分兑换好礼</div>
             </div>
             <div class="arrow-right"></div>
           </div>
@@ -103,7 +89,9 @@
                 <div class="benefit-desc">每月可领取{{ memberLevel.coupon }}元代金券</div>
               </div>
               <div class="benefit-action">
-                <button class="claim-btn" @click="claimCoupon">立即领取</button>
+                <button class="claim-btn" @click="claimCoupon" :disabled="isCouponClaimed">
+                  {{ isCouponClaimed ? '已领取' : '立即领取' }}
+                </button>
               </div>
             </div>
             
@@ -116,20 +104,39 @@
                 <div class="benefit-desc">生日当月可领取专属礼品</div>
               </div>
               <div class="benefit-action">
-                <button class="claim-btn disabled">已领取</button>
+                <button class="claim-btn">查看详情</button>
               </div>
             </div>
             
             <div class="benefit-item">
               <div class="benefit-icon">
-                <img src="~assets/img/profile/shopping.svg" alt="专属折扣" class="icon-img">
+                <img src="~assets/img/profile/cart.svg" alt="专属折扣" class="icon-img">
               </div>
               <div class="benefit-content">
                 <div class="benefit-title">专属折扣</div>
-                <div class="benefit-desc">{{ memberLevel.name }}会员专享9折优惠</div>
+                <div class="benefit-desc">会员专享商品9折优惠</div>
               </div>
               <div class="benefit-action">
                 <button class="claim-btn">立即查看</button>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <div class="member-activities">
+          <h3>会员活动</h3>
+          <div class="activities-list">
+            <div class="activity-item" v-for="activity in activities" :key="activity.id">
+              <div class="activity-img">
+                <img :src="activity.img" :alt="activity.title" class="activity-pic">
+              </div>
+              <div class="activity-content">
+                <div class="activity-title">{{ activity.title }}</div>
+                <div class="activity-desc">{{ activity.desc }}</div>
+                <div class="activity-time">{{ activity.time }}</div>
+              </div>
+              <div class="activity-action">
+                <button class="join-btn">立即参与</button>
               </div>
             </div>
           </div>
@@ -145,6 +152,7 @@
               </div>
               <div class="level-benefits">
                 <div class="benefit-item">每月{{ level.coupon }}元代金券</div>
+                <div class="benefit-item">专属客服服务</div>
               </div>
             </div>
           </div>
@@ -168,6 +176,7 @@ export default {
     return {
       currentPoints: 800,
       couponCount: 3,
+      isCouponClaimed: false,
       levels: [
         {
           name: "白银",
@@ -187,6 +196,29 @@ export default {
           coupon: 200,
           desc: "黑金会员"
         }
+      ],
+      activities: [
+        {
+          id: 1,
+          title: "积分翻倍活动",
+          desc: "周末购物积分翻倍",
+          time: "每周六日",
+          img: "~assets/img/common/placeholder.png"
+        },
+        {
+          id: 2,
+          title: "新会员专享",
+          desc: "新会员首单立减50元",
+          time: "永久有效",
+          img: "~assets/img/common/placeholder.png"
+        },
+        {
+          id: 3,
+          title: "生日特权",
+          desc: "生日当月购物享8折优惠",
+          time: "生日当月",
+          img: "~assets/img/common/placeholder.png"
+        }
       ]
     };
   },
@@ -201,10 +233,29 @@ export default {
         }
       }
       return level;
+    },
+    nextLevelPoints() {
+      const currentIndex = this.levels.findIndex(level => level.name === this.memberLevel.name);
+      if (currentIndex === this.levels.length - 1) {
+        return this.memberLevel.points;
+      }
+      return this.levels[currentIndex + 1].points;
+    },
+    progressPercentage() {
+      const currentIndex = this.levels.findIndex(level => level.name === this.memberLevel.name);
+      if (currentIndex === this.levels.length - 1) {
+        return 100;
+      }
+      const currentLevelPoints = this.memberLevel.points;
+      const nextLevelPoints = this.levels[currentIndex + 1].points;
+      return ((this.currentPoints - currentLevelPoints) / (nextLevelPoints - currentLevelPoints)) * 100;
     }
   },
   methods: {
     claimCoupon() {
+      if (this.isCouponClaimed) return;
+      this.isCouponClaimed = true;
+      this.couponCount++;
       alert(`您已成功领取${this.memberLevel.coupon}元代金券！`);
     },
     goToOrder() {
@@ -213,17 +264,11 @@ export default {
     goToCoupon() {
       console.log('跳转到优惠券页面');
     },
-    goToCollect() {
-      console.log('跳转到收藏页面');
-    },
-    goToMessage() {
-      console.log('跳转到消息页面');
-    },
     goToAddress() {
       console.log('跳转到地址管理页面');
     },
-    goToSetting() {
-      console.log('跳转到设置页面');
+    goToPoints() {
+      console.log('跳转到积分商城页面');
     }
   }
 };
@@ -233,6 +278,7 @@ export default {
 #member {
   height: 100vh;
   position: relative;
+  background-color: #f5f5f5;
 }
 
 .nav-bar {
@@ -250,9 +296,10 @@ export default {
 }
 
 .member-header {
-  background-color: var(--color-tint);
+  background: linear-gradient(135deg, var(--color-tint) 0%, #667eea 100%);
   color: #fff;
   padding: 20px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
 }
 
 .member-info {
@@ -270,6 +317,7 @@ export default {
   height: 80px;
   border-radius: 50%;
   background-color: rgba(255, 255, 255, 0.3);
+  border: 3px solid rgba(255, 255, 255, 0.5);
 }
 
 .member-details {
@@ -284,6 +332,7 @@ export default {
 
 .member-level {
   font-size: 14px;
+  margin-bottom: 10px;
 }
 
 .level-tag {
@@ -291,6 +340,31 @@ export default {
   padding: 2px 8px;
   border-radius: 10px;
   margin-right: 5px;
+}
+
+.level-progress {
+  width: 100%;
+}
+
+.progress-bar {
+  width: 100%;
+  height: 6px;
+  background-color: rgba(255, 255, 255, 0.3);
+  border-radius: 3px;
+  overflow: hidden;
+  margin-bottom: 5px;
+}
+
+.progress-fill {
+  height: 100%;
+  background-color: #fff;
+  border-radius: 3px;
+  transition: width 0.3s ease;
+}
+
+.progress-text {
+  font-size: 12px;
+  text-align: right;
 }
 
 .member-points {
@@ -311,8 +385,8 @@ export default {
   background-color: #fff;
   margin-bottom: 10px;
   border-radius: 8px;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
   overflow: hidden;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
 }
 
 .menu-item {
@@ -328,19 +402,12 @@ export default {
   border-bottom: none;
 }
 
-.menu-item:hover {
-  background-color: #fafafa;
+.menu-item:active {
+  background-color: #f5f5f5;
 }
 
 .menu-icon {
   margin-right: 20px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  background-color: #f5f5f5;
 }
 
 .icon-img {
@@ -366,24 +433,25 @@ export default {
 }
 
 .arrow-right {
-  width: 6px;
-  height: 6px;
+  width: 8px;
+  height: 8px;
   border-top: 2px solid #ccc;
   border-right: 2px solid #ccc;
   transform: rotate(45deg);
-  margin-left: 10px;
 }
 
 .member-benefits,
+.member-activities,
 .member-levels {
   padding: 20px;
   margin-bottom: 10px;
   background-color: #fff;
   border-radius: 8px;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
 }
 
 .member-benefits h3,
+.member-activities h3,
 .member-levels h3 {
   margin-bottom: 15px;
   font-size: 16px;
@@ -394,6 +462,7 @@ export default {
 }
 
 .benefits-list,
+.activities-list,
 .levels-list {
   display: flex;
   flex-direction: column;
@@ -405,21 +474,19 @@ export default {
   justify-content: space-between;
   padding: 15px 0;
   border-bottom: 1px solid #f0f0f0;
+  transition: transform 0.3s ease;
 }
 
 .benefit-item:last-child {
   border-bottom: none;
 }
 
+.benefit-item:active {
+  transform: scale(0.98);
+}
+
 .benefit-icon {
   margin-right: 15px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  background-color: #f5f5f5;
 }
 
 .benefit-content {
@@ -449,13 +516,80 @@ export default {
   transition: background-color 0.3s ease;
 }
 
-.claim-btn:hover {
-  background-color: #ff6600;
+.claim-btn:active {
+  background-color: #409eff;
 }
 
-.claim-btn.disabled {
+.claim-btn:disabled {
   background-color: #ccc;
   cursor: not-allowed;
+}
+
+.activity-item {
+  display: flex;
+  align-items: center;
+  padding: 15px 0;
+  border-bottom: 1px solid #f0f0f0;
+  transition: transform 0.3s ease;
+}
+
+.activity-item:last-child {
+  border-bottom: none;
+}
+
+.activity-item:active {
+  transform: scale(0.98);
+}
+
+.activity-img {
+  margin-right: 15px;
+  width: 60px;
+  height: 60px;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.activity-pic {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.activity-content {
+  flex: 1;
+}
+
+.activity-title {
+  font-size: 14px;
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 5px;
+}
+
+.activity-desc {
+  font-size: 12px;
+  color: #666;
+  margin-bottom: 5px;
+}
+
+.activity-time {
+  font-size: 11px;
+  color: #999;
+}
+
+.join-btn {
+  background-color: var(--color-high-text);
+  color: #fff;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 15px;
+  font-size: 11px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.join-btn:active {
+  background-color: #409eff;
 }
 
 .level-item {
@@ -465,15 +599,15 @@ export default {
   padding: 15px 0;
   border-bottom: 1px solid #f0f0f0;
   position: relative;
-  transition: background-color 0.3s ease;
+  transition: transform 0.3s ease;
 }
 
 .level-item:last-child {
   border-bottom: none;
 }
 
-.level-item:hover {
-  background-color: #fafafa;
+.level-item:active {
+  transform: scale(0.98);
 }
 
 .level-item.active {
