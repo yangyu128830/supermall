@@ -36,7 +36,8 @@
     flex: 1;
   }
 
-  .item-icon img, .item-active-icon img {
+  .item-icon img, .item-active-icon img,
+  .item-icon svg, .item-active-icon svg {
     width: 24px;
     height: 24px;
     margin-top: 5px;

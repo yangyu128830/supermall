@@ -1,41 +1,24 @@
 <template>
   <div id="user-info">
-    <div class="user-info-container clear-fix">
-      <div class="user-avatar left">
-        <slot name="user-icon">
-          <svg class="avatar-svg">
-            <use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="#avatar-default"></use>
-          </svg>
-        </slot>
-      </div>
-      <div class="user-details left">
-        <div class="user-name">
-          <slot name="user-nickname">
-            <span class="login-prompt">登录/注册</span>
-          </slot>
-        </div>
-        <div class="user-stats">
-          <div class="stat-item">
-            <span class="stat-number">0</span>
-            <span class="stat-label">关注</span>
-          </div>
-          <div class="stat-item">
-            <span class="stat-number">0</span>
-            <span class="stat-label">粉丝</span>
-          </div>
-          <div class="stat-item">
-            <span class="stat-number">0</span>
-            <span class="stat-label">收藏</span>
-          </div>
-        </div>
-      </div>
-      <div class="user-actions right">
-        <button class="action-btn">编辑资料</button>
-        <svg fill="#fff" class="arrow-svg">
-          <use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="#arrow-right"></use>
+    <a href="#" class="clear-fix">
+      <slot name="user-icon">
+        <svg class="privateImage-svg left">
+          <use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="#avatar-default"></use>
         </svg>
+      </slot>
+      <div class="login-info left">
+        <slot name="user-nickname">
+          <div>登录/注册</div>
+        </slot>
+        <div class="phone">
+          <span>
+            <svg data-v-735ff1be="" fill="#fff" class="icon-mobile"><use data-v-735ff1be="" xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="#mobile"></use></svg>
+          </span>
+          <slot name="user-phone">暂无绑定手机号</slot>
+        </div>
       </div>
-    </div>
+      <svg data-v-735ff1be="" fill="#fff" class="arrow-svg right"><use data-v-735ff1be="" xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="#arrow-right"></use></svg>
+    </a>
   </div>
 </template>
 
@@ -48,95 +31,46 @@
 <style scoped>
   #user-info {
     background-color: var(--color-tint);
-    padding: 20px 16px;
+    padding: 15px;
     margin-top: -5px;
   }
 
-  .user-info-container {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-  }
-
-  .user-avatar .avatar-svg {
-    width: 70px;
-    height: 70px;
+  #user-info .privateImage-svg {
+    width: 60px;
+    height: 60px;
     background-color: #fff;
-    border-radius: 35px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
-  }
-
-  .user-details {
-    flex: 1;
-    margin-left: 16px;
-  }
-
-  .user-name {
-    font-size: 18px;
-    font-weight: 700;
-    color: #fff;
-    margin-bottom: 8px;
-  }
-
-  .login-prompt {
-    font-size: 16px;
-    font-weight: 400;
-  }
-
-  .user-stats {
-    display: flex;
-  }
-
-  .stat-item {
-    margin-right: 24px;
-    text-align: center;
-  }
-
-  .stat-number {
-    display: block;
-    font-size: 14px;
-    font-weight: 700;
-    color: #fff;
-  }
-
-  .stat-label {
-    display: block;
-    font-size: 12px;
-    color: rgba(255, 255, 255, 0.8);
-    margin-top: 2px;
-  }
-
-  .user-actions {
-    display: flex;
-    align-items: center;
-  }
-
-  .action-btn {
-    background-color: rgba(255, 255, 255, 0.2);
-    color: #fff;
-    border: 1px solid rgba(255, 255, 255, 0.3);
-    border-radius: 20px;
-    padding: 6px 12px;
-    font-size: 13px;
-    margin-right: 8px;
-    cursor: pointer;
-    transition: all 0.3s ease;
-  }
-
-  .action-btn:hover {
-    background-color: rgba(255, 255, 255, 0.3);
-  }
-
-  .arrow-svg {
-    width: 12px;
-    height: 24px;
+    border-radius: 30px;
   }
 
   .left {
     float: left;
   }
 
-  .right {
-    float: right;
+  #user-info .arrow-svg {
+    width: 11px;
+    height: 22px;
+    margin-top: 18px;
+  }
+
+  #user-info .login-info {
+    color: #fff;
+    margin: 10px 0 0 10px;
+  }
+
+  #user-info .login-info .phone {
+    position: relative;
+
+    font-size: 13px;
+    margin-top: 5px;
+    margin-left: 15px;
+    font-weight: 300;
+  }
+
+  #user-info .login-info .phone .icon-mobile {
+    position: absolute;
+    width: 12px;
+    height: 18px;
+    left: -15px;
+    top: 0px;
   }
 </style>
