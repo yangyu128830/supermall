@@ -110,8 +110,9 @@
       setTransform: function (position) {
         this.swiperStyle.transform = `translate3d(${position}px, 0, 0)`;
         this.swiperStyle['-webkit-transform'] = `translate3d(${position}px, 0, 0)`;
-        this.swiperStyle['transform'] = `translate3d(${position}px, 0, 0)`;
-        this.swiperStyle['-ms-transform'] = `translate3d(${position}px), 0, 0`;
+        this.swiperStyle['-ms-transform'] = `translate3d(${position}px, 0, 0)`;
+        this.swiperStyle['-moz-transform'] = `translate3d(${position}px, 0, 0)`;
+        this.swiperStyle['-o-transform'] = `translate3d(${position}px, 0, 0)`;
       },
 
       /**

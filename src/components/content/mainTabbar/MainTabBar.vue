@@ -21,8 +21,12 @@
       <div slot="text">我的</div>
     </tab-bar-item>
     <tab-bar-item link="/member">
-      <img slot="icon" src="~assets/img/tabbar/profile.svg" alt="">
-      <img slot="active-icon" src="~assets/img/tabbar/profile_active.svg" alt="">
+      <svg slot="icon" class="tabbar-icon">
+        <use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="#member"></use>
+      </svg>
+      <svg slot="active-icon" class="tabbar-icon">
+        <use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="#member-active"></use>
+      </svg>
       <div slot="text">会员中心</div>
     </tab-bar-item>
   </tab-bar>
