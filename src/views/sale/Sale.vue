@@ -10,57 +10,69 @@
       <input type="text" class="search-input" placeholder="搜索特价商品">
     </div>
     
-    <!-- 天天低价商品框 -->
-    <div class="daily-deals">
-      <div class="daily-deals-header">
-        <h2>天天低价</h2>
-        <button class="view-all-btn">查看全部</button>
-      </div>
-      <div class="daily-deals-list">
-        <div class="deal-item" v-for="(item, index) in dailyDeals" :key="index">
-          <img :src="item.image" alt="" class="deal-image">
-          <div class="deal-info">
-            <h3 class="deal-title">{{ item.title }}</h3>
-            <p class="deal-price">¥{{ item.price }}</p>
+    <!-- 加载状态 -->
+    <loading v-if="loading"></loading>
+    
+    <!-- 错误信息 -->
+    <div class="error-container" v-if="error">
+      <p class="error-text">{{ error }}</p>
+      <button class="reload-btn" @click="reloadData">重新加载</button>
+    </div>
+    
+    <!-- 内容区域 -->
+    <div class="content-container" v-if="!loading && !error">
+      <!-- 天天低价商品框 -->
+      <div class="daily-deals">
+        <div class="daily-deals-header">
+          <h2>天天低价</h2>
+          <button class="view-all-btn">查看全部</button>
+        </div>
+        <div class="daily-deals-list">
+          <div class="deal-item" v-for="(item, index) in dailyDeals" :key="index">
+            <img :src="item.image" alt="" class="deal-image">
+            <div class="deal-info">
+              <h3 class="deal-title">{{ item.title }}</h3>
+              <p class="deal-price">¥{{ item.price }}</p>
+            </div>
           </div>
         </div>
       </div>
-    </div>
-    
-    <!-- 分类表 -->
-    <div class="category-tabs">
-      <div class="tab-item" v-for="(category, index) in categories" :key="index" :class="{ active: currentCategory === index }" @click="switchCategory(index)">
-        {{ category }}
-      </div>
-    </div>
-    
-    <!-- 商品列表 -->
-    <scroll class="content" ref="scroll" :probe-type="3">
-      <div class="goods-list">
-        <div class="goods-item" v-for="(item, index) in currentGoods" :key="index" @click="goToDetail(item.id)">
-          <img :src="item.image" alt="" class="goods-image">
-          <div class="goods-info">
-            <h3 class="goods-title">{{ item.title }}</h3>
-            <p class="goods-price">¥{{ item.price }}</p>
-            <p class="goods-origin-price">¥{{ item.originPrice }}</p>
-          </div>
+      
+      <!-- 分类表 -->
+      <div class="category-tabs">
+        <div class="tab-item" v-for="(category, index) in categories" :key="index" :class="{ active: currentCategory === index }" @click="switchCategory(index)">
+          {{ category }}
         </div>
       </div>
-    </scroll>
-    
-    <!-- 我的爆料板块 -->
-    <div class="爆料-section">
-      <div class="爆料-header">
-        <h2>我的爆料</h2>
-        <button class="submit-btn">发布爆料</button>
-      </div>
-      <div class="爆料-list">
-        <div class="爆料-item" v-for="(item, index) in 爆料s" :key="index">
-          <img :src="item.image" alt="" class="爆料-image">
-          <div class="爆料-info">
-            <h3 class="爆料-title">{{ item.title }}</h3>
-            <p class="爆料-price">¥{{ item.price }}</p>
-            <p class="爆料-user">by {{ item.user }}</p>
+      
+      <!-- 商品列表 -->
+      <scroll class="content" ref="scroll" :probe-type="3">
+        <div class="goods-list">
+          <div class="goods-item" v-for="(item, index) in currentGoods" :key="index" @click="goToDetail(item.id)">
+            <img :src="item.image" alt="" class="goods-image">
+            <div class="goods-info">
+              <h3 class="goods-title">{{ item.title }}</h3>
+              <p class="goods-price">¥{{ item.price }}</p>
+              <p class="goods-origin-price">¥{{ item.originPrice }}</p>
+            </div>
+          </div>
+        </div>
+      </scroll>
+      
+      <!-- 我的爆料板块 -->
+      <div class="爆料-section">
+        <div class="爆料-header">
+          <h2>我的爆料</h2>
+          <button class="submit-btn">发布爆料</button>
+        </div>
+        <div class="爆料-list">
+          <div class="爆料-item" v-for="(item, index) in 爆料s" :key="index">
+            <img :src="item.image" alt="" class="爆料-image">
+            <div class="爆料-info">
+              <h3 class="爆料-title">{{ item.title }}</h3>
+              <p class="爆料-price">¥{{ item.price }}</p>
+              <p class="爆料-user">by {{ item.user }}</p>
+            </div>
           </div>
         </div>
       </div>
@@ -71,64 +83,37 @@
 <script>
 import NavBar from 'common/navbar/NavBar'
 import Scroll from 'common/scroll/Scroll'
+import Loading from 'common/loading/Loading'
 
 export default {
   name: "Sale",
   components: {
     NavBar,
-    Scroll
+    Scroll,
+    Loading
   },
   data() {
     return {
+      // 加载状态
+      loading: false,
+      // 错误信息
+      error: '',
       // 天天低价商品数据
-      dailyDeals: [
-        { id: 1, title: '商品1', price: 9.9, image: 'https://via.placeholder.com/100' },
-        { id: 2, title: '商品2', price: 19.9, image: 'https://via.placeholder.com/100' },
-        { id: 3, title: '商品3', price: 29.9, image: 'https://via.placeholder.com/100' },
-        { id: 4, title: '商品4', price: 39.9, image: 'https://via.placeholder.com/100' }
-      ],
+      dailyDeals: [],
       // 分类数据
       categories: ['精选', '24h最热', '3h最热', '好价活动', '食品', '居家'],
       currentCategory: 0,
       // 商品数据
       goodsData: {
-        0: [ // 精选
-          { id: 1, title: '精选商品1', price: 9.9, originPrice: 19.9, image: 'https://via.placeholder.com/150' },
-          { id: 2, title: '精选商品2', price: 19.9, originPrice: 29.9, image: 'https://via.placeholder.com/150' },
-          { id: 3, title: '精选商品3', price: 29.9, originPrice: 39.9, image: 'https://via.placeholder.com/150' }
-        ],
-        1: [ // 24h最热
-          { id: 4, title: '24h最热商品1', price: 19.9, originPrice: 29.9, image: 'https://via.placeholder.com/150' },
-          { id: 5, title: '24h最热商品2', price: 29.9, originPrice: 39.9, image: 'https://via.placeholder.com/150' },
-          { id: 6, title: '24h最热商品3', price: 39.9, originPrice: 49.9, image: 'https://via.placeholder.com/150' }
-        ],
-        2: [ // 3h最热
-          { id: 7, title: '3h最热商品1', price: 9.9, originPrice: 19.9, image: 'https://via.placeholder.com/150' },
-          { id: 8, title: '3h最热商品2', price: 19.9, originPrice: 29.9, image: 'https://via.placeholder.com/150' },
-          { id: 9, title: '3h最热商品3', price: 29.9, originPrice: 39.9, image: 'https://via.placeholder.com/150' }
-        ],
-        3: [ // 好价活动
-          { id: 10, title: '好价活动商品1', price: 19.9, originPrice: 29.9, image: 'https://via.placeholder.com/150' },
-          { id: 11, title: '好价活动商品2', price: 29.9, originPrice: 39.9, image: 'https://via.placeholder.com/150' },
-          { id: 12, title: '好价活动商品3', price: 39.9, originPrice: 49.9, image: 'https://via.placeholder.com/150' }
-        ],
-        4: [ // 食品
-          { id: 13, title: '食品商品1', price: 9.9, originPrice: 19.9, image: 'https://via.placeholder.com/150' },
-          { id: 14, title: '食品商品2', price: 19.9, originPrice: 29.9, image: 'https://via.placeholder.com/150' },
-          { id: 15, title: '食品商品3', price: 29.9, originPrice: 39.9, image: 'https://via.placeholder.com/150' }
-        ],
-        5: [ // 居家
-          { id: 16, title: '居家商品1', price: 19.9, originPrice: 29.9, image: 'https://via.placeholder.com/150' },
-          { id: 17, title: '居家商品2', price: 29.9, originPrice: 39.9, image: 'https://via.placeholder.com/150' },
-          { id: 18, title: '居家商品3', price: 39.9, originPrice: 49.9, image: 'https://via.placeholder.com/150' }
-        ]
+        0: [], // 精选
+        1: [], // 24h最热
+        2: [], // 3h最热
+        3: [], // 好价活动
+        4: [], // 食品
+        5: []  // 居家
       },
       // 爆料数据
-      爆料s: [
-        { id: 1, title: '爆料商品1', price: 9.9, user: '用户1', image: 'https://via.placeholder.com/100' },
-        { id: 2, title: '爆料商品2', price: 19.9, user: '用户2', image: 'https://via.placeholder.com/100' },
-        { id: 3, title: '爆料商品3', price: 29.9, user: '用户3', image: 'https://via.placeholder.com/100' }
-      ]
+      爆料s: []
     }
   },
   computed: {
@@ -136,6 +121,70 @@ export default {
     currentGoods() {
       return this.goodsData[this.currentCategory]
     }
+  },
+  created() {
+    // 模拟数据加载
+    this.loading = true
+    this.error = ''
+    
+    // 模拟异步请求
+    setTimeout(() => {
+      try {
+        // 模拟数据加载成功
+        this.dailyDeals = [
+          { id: 1, title: '商品1', price: 9.9, image: 'https://via.placeholder.com/100' },
+          { id: 2, title: '商品2', price: 19.9, image: 'https://via.placeholder.com/100' },
+          { id: 3, title: '商品3', price: 29.9, image: 'https://via.placeholder.com/100' },
+          { id: 4, title: '商品4', price: 39.9, image: 'https://via.placeholder.com/100' }
+        ]
+        
+        this.goodsData = {
+          0: [ // 精选
+            { id: 1, title: '精选商品1', price: 9.9, originPrice: 19.9, image: 'https://via.placeholder.com/150' },
+            { id: 2, title: '精选商品2', price: 19.9, originPrice: 29.9, image: 'https://via.placeholder.com/150' },
+            { id: 3, title: '精选商品3', price: 29.9, originPrice: 39.9, image: 'https://via.placeholder.com/150' }
+          ],
+          1: [ // 24h最热
+            { id: 4, title: '24h最热商品1', price: 19.9, originPrice: 29.9, image: 'https://via.placeholder.com/150' },
+            { id: 5, title: '24h最热商品2', price: 29.9, originPrice: 39.9, image: 'https://via.placeholder.com/150' },
+            { id: 6, title: '24h最热商品3', price: 39.9, originPrice: 49.9, image: 'https://via.placeholder.com/150' }
+          ],
+          2: [ // 3h最热
+            { id: 7, title: '3h最热商品1', price: 9.9, originPrice: 19.9, image: 'https://via.placeholder.com/150' },
+            { id: 8, title: '3h最热商品2', price: 19.9, originPrice: 29.9, image: 'https://via.placeholder.com/150' },
+            { id: 9, title: '3h最热商品3', price: 29.9, originPrice: 39.9, image: 'https://via.placeholder.com/150' }
+          ],
+          3: [ // 好价活动
+            { id: 10, title: '好价活动商品1', price: 19.9, originPrice: 29.9, image: 'https://via.placeholder.com/150' },
+            { id: 11, title: '好价活动商品2', price: 29.9, originPrice: 39.9, image: 'https://via.placeholder.com/150' },
+            { id: 12, title: '好价活动商品3', price: 39.9, originPrice: 49.9, image: 'https://via.placeholder.com/150' }
+          ],
+          4: [ // 食品
+            { id: 13, title: '食品商品1', price: 9.9, originPrice: 19.9, image: 'https://via.placeholder.com/150' },
+            { id: 14, title: '食品商品2', price: 19.9, originPrice: 29.9, image: 'https://via.placeholder.com/150' },
+            { id: 15, title: '食品商品3', price: 29.9, originPrice: 39.9, image: 'https://via.placeholder.com/150' }
+          ],
+          5: [ // 居家
+            { id: 16, title: '居家商品1', price: 19.9, originPrice: 29.9, image: 'https://via.placeholder.com/150' },
+            { id: 17, title: '居家商品2', price: 29.9, originPrice: 39.9, image: 'https://via.placeholder.com/150' },
+            { id: 18, title: '居家商品3', price: 39.9, originPrice: 49.9, image: 'https://via.placeholder.com/150' }
+          ]
+        }
+        
+        this.爆料s = [
+          { id: 1, title: '爆料商品1', price: 9.9, user: '用户1', image: 'https://via.placeholder.com/100' },
+          { id: 2, title: '爆料商品2', price: 19.9, user: '用户2', image: 'https://via.placeholder.com/100' },
+          { id: 3, title: '爆料商品3', price: 29.9, user: '用户3', image: 'https://via.placeholder.com/100' }
+        ]
+        
+        this.loading = false
+      } catch (err) {
+        // 模拟数据加载失败
+        this.loading = false
+        this.error = '数据加载失败，请稍后重试'
+        console.error(err)
+      }
+    }, 1000)
   },
   methods: {
     // 切换分类
@@ -145,6 +194,10 @@ export default {
     // 跳转到商品详情
     goToDetail(id) {
       this.$router.push(`/detail?id=${id}`)
+    },
+    // 重新加载数据
+    reloadData() {
+      this.created()
     }
   }
 }
@@ -153,6 +206,45 @@ export default {
 <style scoped>
 #sale {
   height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* 错误信息样式 */
+.error-container {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 20px;
+  text-align: center;
+}
+
+.error-text {
+  color: #ff4d4f;
+  font-size: 16px;
+  margin-bottom: 20px;
+}
+
+.reload-btn {
+  padding: 10px 20px;
+  border: none;
+  border-radius: 4px;
+  background-color: #ff6b00;
+  color: white;
+  font-size: 14px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.reload-btn:hover {
+  background-color: #ff8100;
+}
+
+/* 内容区域样式 */
+.content-container {
+  flex: 1;
   display: flex;
   flex-direction: column;
 }
