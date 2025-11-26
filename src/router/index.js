@@ -43,11 +43,11 @@ const routes = [
     path: '/detail',
     component: Detail
   },
-  {
+  { 
     path: '/sale',
     component: Sale
   },
-  {
+  { 
     path: '/movie',
     component: Movie
   }
