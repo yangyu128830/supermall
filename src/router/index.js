@@ -8,6 +8,7 @@ const Profile = () => import('views/profile/Profile')
 const Detail = () => import('views/detail/Detail')
 const Member = () => import('views/member/Member')
 const Sale = () => import('views/sale/Sale')
+const Movie = () => import('views/movie/Movie')
 
 // 1.安装VueRouter
 Vue.use(VueRouter)
@@ -42,9 +43,13 @@ const routes = [
     path: '/detail',
     component: Detail
   },
-  { 
+  {
     path: '/sale',
     component: Sale
+  },
+  {
+    path: '/movie',
+    component: Movie
   }
 ]
 

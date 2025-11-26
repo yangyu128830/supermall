@@ -34,6 +34,11 @@
       <img slot="active-icon" src="~assets/img/tabbar/sale_active.svg" alt="">
       <div slot="text">特价</div>
     </tab-bar-item>
+    <tab-bar-item link="/movie">
+      <img slot="icon" src="~assets/img/tabbar/shopcart.svg" alt="">
+      <img slot="active-icon" src="~assets/img/tabbar/shopcart_active.svg" alt="">
+      <div slot="text">电影演出</div>
+    </tab-bar-item>
   </tab-bar>
 </template>
 
