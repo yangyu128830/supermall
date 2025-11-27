@@ -45,14 +45,17 @@
     <div class="member-levels">
       <h3 class="section-title">会员等级说明</h3>
       <div class="levels-list">
-        <div class="level-item" :class="{ active: level.name === memberLevel.name }" v-for="level in allLevels" :key="level.name">
-          <div class="level-icon">{{ level.icon }}</div>
-          <div class="level-details">
-            <h4>{{ level.name }}</h4>
-            <p>所需积分：{{ level.needScore }}分</p>
-            <p>福利：每月{{ level.coupon }}元代金券</p>
+        <router-link :to="'/member/' + level.name" class="level-item-link" v-for="level in allLevels" :key="level.name">
+          <div class="level-item" :class="{ active: level.name === memberLevel.name }">
+            <div class="level-icon">{{ level.icon }}</div>
+            <div class="level-details">
+              <h4>{{ level.name }}</h4>
+              <p>所需积分：{{ level.needScore }}分</p>
+              <p>福利：每月{{ level.coupon }}元代金券</p>
+            </div>
+            <span class="arrow-right"></span>
           </div>
-        </div>
+        </router-link>
       </div>
     </div>
 
@@ -334,13 +337,19 @@ export default {
 }
 
 .levels-list {
-  padding: 0 20px 20px;
+  padding: 0;
+}
+
+.level-item-link {
+  text-decoration: none;
+  color: inherit;
+  display: block;
 }
 
 .level-item {
   display: flex;
   align-items: center;
-  padding: 15px 0;
+  padding: 15px 20px;
   border-bottom: 1px solid #f0f0f0;
   position: relative;
 }
@@ -351,14 +360,15 @@ export default {
 
 .level-item.active {
   background-color: rgba(255, 129, 152, 0.1);
-  margin: 0 -20px;
-  padding: 15px 20px;
-  border-radius: 5px;
 }
 
 .level-icon {
   font-size: 24px;
   margin-right: 20px;
+}
+
+.level-details {
+  flex: 1;
 }
 
 .level-details h4 {
@@ -372,6 +382,17 @@ export default {
   color: #666;
   font-size: 14px;
   margin-bottom: 3px;
+}
+
+.arrow-right {
+  border-top: 1px solid #999;
+  border-left: 1px solid #999;
+  width: 9px;
+  height: 9px;
+  background-color: transparent;
+  transform: rotate(135deg);
+  display: inline-block;
+  margin-left: .1rem;
 }
 
 /* 测试区域样式 */
