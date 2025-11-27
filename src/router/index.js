@@ -7,7 +7,7 @@ const Cart = () => import('views/cart/Cart')
 const Profile = () => import('views/profile/Profile')
 const Detail = () => import('views/detail/Detail')
 const Member = () => import('views/member/Member')
-const LevelDetail = () => import('views/member/LevelDetail')
+const Sale = () => import('views/sale/Sale')
 
 // 1.安装VueRouter
 Vue.use(VueRouter)
@@ -39,8 +39,8 @@ const routes = [
     component: Member
   },
   {
-    path: '/member/:levelName',
-    component: LevelDetail
+    path: '/sale',
+    component: Sale
   },
   {
     path: '/detail',
